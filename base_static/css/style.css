@@ -1,0 +1,13 @@
+#nav-profile {
+    display:inline-flex;
+}
+
+.project-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.project-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

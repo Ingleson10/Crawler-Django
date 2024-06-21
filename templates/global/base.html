@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+{% include "global/partials/_head.html" %}
+<body>
+    {% block style %}
+    {% endblock %}
+    {% block earlyscripts %}
+    {% endblock %}
+    {% include "global/partials/_header.html" %}
+
+    <main role="main" class="container mt-4">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include "global/partials/_footer.html" %}
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

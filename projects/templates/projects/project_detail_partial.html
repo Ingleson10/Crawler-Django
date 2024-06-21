@@ -1,0 +1,26 @@
+<div>
+    <h2>{{ project.name }}</h2>
+    <p>{{ project.description }}</p>
+    <p>Criado em: {{ project.created_at }}</p>
+    
+    <h4>URLs</h4>
+    <ul>
+        {% for url in urls %}
+        <li>{{ url.url }} ({{ url.status }})</li>
+        {% endfor %}
+    </ul>
+    
+    <h4>Agendamentos</h4>
+    <ul>
+        {% for schedule in schedules %}
+        <li>{{ schedule.frequency }}: {{ schedule.next_run }}</li>
+        {% endfor %}
+    </ul>
+    
+    <h4>Regras de Scraping</h4>
+    <ul>
+        {% for rule in scraping_rules %}
+        <li>{{ rule.selector }} ({{ rule.type }})</li>
+        {% endfor %}
+    </ul>
+</div>
