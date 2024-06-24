@@ -37,7 +37,7 @@ def signup_view(request):
         user.first_name = form.cleaned_data['first_name'].upper()
         user.last_name = form.cleaned_data['last_name'].upper()
         user.save()
-        messages.success(request, 'Sua senha foi atualizada com sucesso!')
+        messages.success(request, 'Seu cadastro foi gerado com sucesso!')
         return redirect('login')
     return render(request, 'accounts/signup.html', {'form': form})
 
@@ -76,3 +76,9 @@ def change_password(request):
     return render(request, 'accounts/change_password.html', {
         'form': form
     })
+    
+def terms_of_service(request):
+    return render(request, 'myapp/terms_of_service.html')
+
+def privacy_policy(request):
+    return render(request, 'myapp/privacy_policy.html')

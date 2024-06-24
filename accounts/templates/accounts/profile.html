@@ -10,38 +10,31 @@
 {% endblock %}
 
 {% block content %}
-
-<h1>Perfil do Usuário</h1>
-<header class="navbar navbar-expand-lg navbar-light bg-light" id="nav-profile">
-    <a href="{% url 'project_list' %}" class="nav-link">Meus Projetos</a>
-</header>
-<div class="container">
-    <section id="meus-dados" class="profile-section">
+<div class="container mt-4">
+    <h1>Perfil do Usuário</h1>
+    <header class="navbar navbar-expand-lg navbar-light bg-light" id="nav-profile">
+        <a href="{% url 'project_list' %}" class="nav-link">Meus Projetos</a>
+    </header>
+    <section id="meus-dados" class="profile-section mt-4">
         <h2>Meus Dados</h2>
         <p>Aqui você pode visualizar e modificar seus dados cadastrais.</p>
         <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <a href="{% url 'change_password' %}" class="forgot-password">Alterar Senha</a>
             </div>
-            <button type="submit" class="btn btn-success">Salvar</button>
+            <button type="submit" class="btn btn-success mt-2">Salvar</button>
         </form>
         {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "success" %}
-                    <div class="alert alert-success" role="alert" id="messages" style="margin-Top:20px;">
+            <div id="messages" style="margin-top: 20px;">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
                         <p>{{ message }}</p>
                     </div>
-                {% elif  message.tags == "error" %}
-                    <div class="alert alert-danger" role="alert" id="messages" style="margin-top:20px;">
-                        <p>{{ message }}</p>
-                    </div>
-                {% endif %}
-            {% endfor %}
+                {% endfor %}
+            </div>
         {% endif %}
     </section>
 </div>
-
-
 {% endblock %}

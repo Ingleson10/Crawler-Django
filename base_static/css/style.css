@@ -1,13 +1,157 @@
+/* Estilos para a barra de navegação do perfil */
 #nav-profile {
-    display:inline-flex;
+    display: inline-flex;
+    background-color: #f8f9fa;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Links de projeto */
 .project-link {
     color: #007bff;
     text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease, text-decoration 0.3s ease;
 }
 
 .project-link:hover {
     color: #0056b3;
     text-decoration: underline;
+}
+
+/* Estilos para formulários */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-control {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* Botões */
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    box-shadow: 0 4px 8px rgba(33, 136, 56, 0.2);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004085;
+    box-shadow: 0 4px 8px rgba(0, 91, 179, 0.2);
+}
+
+/* Mensagens de feedback */
+.alert {
+    margin-top: 20px;
+    border-radius: 5px;
+    padding: 15px;
+    font-size: 1rem;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+/* Links de formulário */
+.forgot-password {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+/* Estilos para a seção de perfil */
+.profile-section {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
+/* Estilos gerais */
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+h1, h2 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1rem;
+    color: #6c757d;
+}
+
+/* Classes de margem */
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mt-4 {
+    margin-top: 1.5rem;
+}
+
+.mt-5 {
+    margin-top: 3rem;
+}
+
+/* Media queries para design responsivo */
+@media (max-width: 767px) {
+    #nav-profile {
+        display: block;
+        text-align: center;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-top: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 }

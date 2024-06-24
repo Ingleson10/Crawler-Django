@@ -8,20 +8,29 @@
         <p class="lead">Sua ferramenta de rastreamento de dados eficiente e confiável.</p>
         <hr class="my-4">
         <p>Explore nossos serviços e comece a usar hoje mesmo.</p>
-        <a class="btn btn-primary btn-lg" href="#" role="button">Saiba Mais</a>
+        <a class="btn btn-primary btn-lg" href="{% url 'about' %}" role="button">Saiba Mais</a>
     </div>
 
     <!-- Seção de Destaques -->
     <div class="row mt-5">
-        <div class="col-md-4">
+        <div class="col-md-4 text-center">
+            <div class="feature-icon mb-3">
+                <i class="fas fa-user-friends fa-3x text-primary"></i>
+            </div>
             <h2>Fácil de Usar</h2>
             <p>Nosso sistema é intuitivo e fácil de usar, permitindo que você comece a rastrear dados rapidamente.</p>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 text-center">
+            <div class="feature-icon mb-3">
+                <i class="fas fa-lock fa-3x text-primary"></i>
+            </div>
             <h2>Seguro</h2>
             <p>Garantimos a segurança dos seus dados com nossas medidas de segurança de ponta.</p>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4 text-center">
+            <div class="feature-icon mb-3">
+                <i class="fas fa-headset fa-3x text-primary"></i>
+            </div>
             <h2>Suporte 24/7</h2>
             <p>Estamos aqui para ajudar a qualquer momento com nosso suporte 24 horas por dia, 7 dias por semana.</p>
         </div>
@@ -31,8 +40,8 @@
     <div class="row mt-5">
         <div class="col-md-12 text-center">
             <h2>Entre em Contato</h2>
-            <p>Tem perguntas ou precisa de suporte? Entre em contato conosco através do nosso formulário de contato ou pelo email contato@federickcrawler.com.</p>
-            <a class="btn btn-secondary btn-lg" href="#" role="button">Contato</a>
+            <p>Tem perguntas ou precisa de suporte? Entre em contato conosco através do nosso formulário de contato ou pelo email <a href="mailto:contato@federickcrawler.com">contato@federickcrawler.com</a>.</p>
+            <a class="btn btn-secondary btn-lg" href="{% url 'contact' %}" role="button">Contato</a>
         </div>
     </div>
 </div>
