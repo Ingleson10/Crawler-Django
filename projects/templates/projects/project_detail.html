@@ -1,8 +1,38 @@
 {% extends "global/base.html" %}
-{% load static %}
 
 {% block content %}
 <div class="container mt-5">
-    {% include 'projects/project_detail_partial.html' %}
+    <h2>Detalhes do Projeto: {{ project.name }}</h2>
+    <p>{{ project.description }}</p>
+
+    <h3>URLs</h3>
+    <ul>
+        {% for url in urls %}
+            <li>{{ url.url }} - {{ url.get_status_display }}</li>
+        {% empty %}
+            <p>Não há URLs associadas a este projeto.</p>
+        {% endfor %}
+    </ul>
+
+    <h3>Agendamentos</h3>
+    <ul>
+        {% for schedule in schedules %}
+            <li>{{ schedule.get_frequency_display }} - Próxima execução: {{ schedule.next_run }}</li>
+        {% empty %}
+            <p>Não há agendamentos para este projeto.</p>
+        {% endfor %}
+    </ul>
+
+    <h3>Regras de Scraping</h3>
+    <ul>
+        {% for rule in scraping_rules %}
+            <li>{{ rule.selector }} ({{ rule.get_type_display }})</li>
+        {% empty %}
+            <p>Não há regras de scraping para este projeto.</p>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3">Voltar aos Projetos</a>
 </div>
 {% endblock %}
+

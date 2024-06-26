@@ -4,16 +4,6 @@ from .models import Project, Schedule, URL, ScrapingRule
 from .forms import ProjectForm
 
 @login_required
-def project_list(request):
-    projects = Project.objects.filter(user=request.user)
-    selected_project = projects.first()
-    context = {
-        'projects': projects,
-        'selected_project': selected_project
-    }
-    return render(request, 'projects/project_list.html', context)
-
-@login_required
 def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id, user=request.user)
     urls = URL.objects.filter(project=project)
@@ -27,10 +17,34 @@ def project_detail(request, project_id):
         'scraping_rules': scraping_rules
     }
 
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return render(request, 'projects/project_detail_partial.html', context)
     else:
         return render(request, 'projects/project_detail.html', context)
+
+@login_required
+def project_list(request):
+    projects = Project.objects.filter(user=request.user)
+    selected_project_id = request.GET.get('project_id')
+    selected_project = None
+    urls = []
+    schedules = []
+    scraping_rules = []
+
+    if selected_project_id:
+        selected_project = get_object_or_404(Project, id=selected_project_id, user=request.user)
+        urls = URL.objects.filter(project=selected_project)
+        schedules = Schedule.objects.filter(project=selected_project)
+        scraping_rules = ScrapingRule.objects.filter(project=selected_project)
+    
+    context = {
+        'projects': projects,
+        'selected_project': selected_project,
+        'urls': urls,
+        'schedules': schedules,
+        'scraping_rules': scraping_rules
+    }
+    return render(request, 'projects/project_list.html', context)
 
 @login_required
 def project_create(request):

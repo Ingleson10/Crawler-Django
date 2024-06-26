@@ -30,15 +30,16 @@ def logout_view(request):
 
 
 def signup_view(request):
-    form = CustomUserCreationForm(request.POST or None)
-    if form.is_valid():
-        user = form.save(commit=False)
-        user.email = form.cleaned_data['email'].lower()
-        user.first_name = form.cleaned_data['first_name'].upper()
-        user.last_name = form.cleaned_data['last_name'].upper()
-        user.save()
-        messages.success(request, 'Seu cadastro foi gerado com sucesso!')
-        return redirect('login')
+    if request.user.is_authenticated:
+        return redirect('home')
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Seu cadastro foi gerado com sucesso!')
+            return redirect('login')
+    else:
+        form = CustomUserCreationForm()
     return render(request, 'accounts/signup.html', {'form': form})
 
 

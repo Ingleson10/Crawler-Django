@@ -1,62 +1,31 @@
 {% extends "global/base.html" %}
-{% load static %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container-fluid mt-5">
     <div class="row">
-        
-        <div class="col-md-4">
-            <h3>Meus Projetos</h3>
-            <ul class="list-group">
-                {% for project in projects %}
-                <li class="list-group-item">
-                    <a href="#" class="project-link" data-project-id="{{ project.id }}">{{ project.name }}</a>
-                    <br>
-                    Próxima Execução: {% for schedule in project.schedule_set.all %}{{ schedule.next_run }}{% endfor %}
-                </li>
-                {% endfor %}
-            </ul>
-            <br>
-            <a href="{% url 'project_create' %}" class="btn btn-primary">Criar Novo Projeto</a>
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 col-lg-2 bg-light sidebar">
+            <div class="sidebar-sticky">
+                <a href="{% url 'project_create' %}" class="btn btn-primary mb-3 w-100">Criar Novo Projeto</a>
+                <div class="list-group">
+                    <p style="text-align: center;"><strong>Meus Projetos</strong></p>
+                    {% for project in projects %}
+                        <a href="{% url 'project_detail' project.id %}" class="list-group-item list-group-item-action project-link" data-id="{{ project.id }}">
+                            {{ project.name }}
+                        </a>
+                    {% empty %}
+                        <p>Você ainda não tem projetos. <a href="{% url 'project_create' %}">Crie um novo projeto.</a></p>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
-        
-        <div class="col-md-8" id="project-details">
-            {% if selected_project %}
-                {% include 'projects/project_detail_partial.html' %}
-            {% else %}
-                <h3>Selecione um projeto para ver os detalhes</h3>
-            {% endif %}
-        </div>
+        <!-- Main content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4" id="project-detail-content">
+            {% include 'projects/project_detail_partial.html' %}
+        </main>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const projectLinks = document.querySelectorAll('.project-link');
-    projectLinks.forEach(link => {
-        link.addEventListener('click', function (event) {
-            event.preventDefault();
-            const projectId = this.getAttribute('data-project-id');
-            fetch(`/project/${projectId}/`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.text();
-                    }
-                    throw new Error('Network response was not ok.');
-                })
-                .then(html => {
-                    document.getElementById('project-details').innerHTML = html;
-                })
-                .catch(error => {
-                    console.error('There has been a problem with your fetch operation:', error);
-                });
-        });
-    });
-});
-</script>
 {% endblock %}
+
+

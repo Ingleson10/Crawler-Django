@@ -19,20 +19,23 @@
                 <a href="{% url 'password_reset' %}" class="forgot-password">Esqueceu sua senha?</a>
             </div>
         </form>
-        <hr class="my-4">
-        <a href="{% url 'signup' %}" class="btn btn-success">Cadastre-se</a>
         {% if messages %}
-        <div class="alert alert-danger mt-4" role="alert" id="messages">
             {% for message in messages %}
                 {% if message.tags == "error" %}
-                    <p>{{ message }}</p>
+                    <div class="alert alert-danger" role="alert" id="messages" style="margin-top:20px;">
+                        <p>{{ message }}</p>
+                    </div>
+                {% elif message.tags == "success" %}
+                    <div class="alert alert-success" role="alert" id="messages" style="margin-top:20px;">
+                        <p>{{ message }}</p>
+                    </div>
                 {% endif %}
             {% endfor %}
-        </div>
         {% endif %}
+        <hr class="my-4">
+        <a href="{% url 'signup' %}" class="btn btn-success">Cadastre-se</a>
     </div>
 {% endblock %}
 
 {% block scripts %}
-
 {% endblock %}
