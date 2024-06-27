@@ -1,0 +1,29 @@
+{% extends "global/base.html" %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 col-lg-2 bg-light sidebar">
+            <div class="sidebar-sticky">
+                <a href="{% url 'project_create' %}" class="btn btn-primary mb-3 w-100">Criar Novo Projeto</a>
+                <div class="list-group">
+                    <p style="text-align: center;"><strong>Meus Projetos</strong></p>
+                    {% for project in projects %}
+                        <a href="{% url 'project_detail' project.id %}" class="list-group-item list-group-item-action project-link" data-id="{{ project.id }}">
+                            {{ project.name }}
+                        </a>
+                    {% empty %}
+                        <p>Você ainda não tem projetos. <a href="{% url 'project_create' %}">Crie um novo projeto.</a></p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4" id="project-detail-content">
+            {% include 'projects/project_detail_partial.html' %}
+        </main>
+    </div>
+</div>
+{% endblock %}

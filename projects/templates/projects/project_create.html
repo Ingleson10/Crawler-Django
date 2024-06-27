@@ -1,0 +1,47 @@
+{% extends "global/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Criar Novo Projeto</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ project_form.as_p }}
+        
+        <h3>URLs</h3>
+        <div id="url-forms">
+            {% for form in url_forms %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-url">Adicionar URL</button>
+        
+        <h3>Agendamentos</h3>
+        <div id="schedule-forms">
+            {% for form in schedule_forms %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-schedule">Adicionar Agendamento</button>
+        
+        <h3>Regras de Scraping</h3>
+        <div id="rule-forms">
+            {% for form in scraping_rule_forms %}
+                <div class="form-group">
+                    {{ form.as_p }}
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-rule">Adicionar Regra de Scraping</button>
+        <div id="btns">
+            <button type="submit" class="btn btn-success mt-3">Criar Projeto</button>
+            <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+
+{% endblock %}
