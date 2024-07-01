@@ -28,7 +28,6 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-
 def signup_view(request):
     if request.user.is_authenticated:
         return redirect('home')
@@ -41,7 +40,6 @@ def signup_view(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'accounts/signup.html', {'form': form})
-
 
 @login_required
 def profile_view(request):

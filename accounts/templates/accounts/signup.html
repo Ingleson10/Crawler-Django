@@ -1,25 +1,56 @@
 {% extends "global/base.html" %}
 {% load static %}
 
+{% block title %}Cadastro - Federick Crawler{% endblock %}
+
 {% block scripts %}
 {{ block.super }}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 shadow-container">
     <h2>Cadastro</h2>
     <p>Preencha os campos abaixo para criar sua conta.</p>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        
-        <!-- Mensagens de erro gerais -->
-        {% for field in form %}
-            {% for error in field.errors %}
-                <div class="text-danger">{{ error }}</div>
+        <div class="form-group">
+            <label for="{{ form.first_name.id_for_label }}">Nome:</label>
+            <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}" class="form-control" required>
+            {% for error in form.first_name.errors %}
+                <div class="error-message">{{ error }}</div>
             {% endfor %}
-        {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.last_name.id_for_label }}">Sobrenome:</label>
+            <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}" class="form-control" required>
+            {% for error in form.last_name.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.username.id_for_label }}">Email:</label>
+            <input type="email" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control" required>
+            {% for error in form.username.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.password1.id_for_label }}">Senha:</label>
+            <input type="password" name="{{ form.password1.name }}" id="{{ form.password1.id_for_label }}" class="form-control" required>
+            {% for error in form.password1.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            <label for="{{ form.password2.id_for_label }}">Confirmação de Senha:</label>
+            <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" class="form-control" required>
+            {% for error in form.password2.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+
+        <!-- Mensagens de erro gerais -->
         {% for error in form.non_field_errors %}
             <div class="text-danger">{{ error }}</div>
         {% endfor %}
@@ -30,6 +61,5 @@
     <div class="mt-3">
         <p>Já tem uma conta? <a href="{% url 'login' %}">Faça login</a></p>
     </div>
-
 </div>
 {% endblock %}

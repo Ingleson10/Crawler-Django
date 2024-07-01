@@ -94,11 +94,11 @@ WSGI_APPLICATION = 'federick_crawler.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
+        'NAME': 'crawlerdb',
+        'USER': 'erik',
+        'PASSWORD': 'Elements@2024',
+        'HOST': 'localhost',
+        'PORT': 5432,
     }
 }
 

@@ -1,3 +1,11 @@
+/* global.css */
+
+/* Fundo para todas as páginas */
+body {
+    background: url('/static/images/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+}
+
 /* Estilos para a barra de navegação do perfil */
 #nav-profile {
     display: inline-flex;
@@ -20,8 +28,8 @@
     position: fixed;
     padding-top: 0;
     left: 0;
-    margin-bottom: 2rem; /* Add some margin on the bottom */
-    bottom: auto; /* Remove fixed bottom */
+    margin-bottom: 2rem;
+    bottom: auto;
     box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
 
@@ -32,10 +40,10 @@
     height: calc(100vh - 48px);
     padding-top: .5rem;
     overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    overflow-y: auto;
 }
 
-.row .list-group-item{
+.row .list-group-item {
     text-align: center;
 }
 
@@ -51,7 +59,6 @@
     color: #0056b3;
     text-decoration: underline;
 }
-
 
 /* Estilos para formulários */
 .form-group {
@@ -171,6 +178,14 @@
     margin: auto;
 }
 
+.shadow-container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+}
+
 h1, h2 {
     font-weight: bold;
     margin-bottom: 20px;
@@ -193,9 +208,6 @@ p {
 .mt-5 {
     margin-top: 3rem;
 }
-
-
-
 
 /* Media queries para design responsivo */
 @media (max-width: 767px) {

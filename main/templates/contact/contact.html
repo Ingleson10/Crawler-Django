@@ -1,8 +1,46 @@
 {% extends "global/base.html" %}
 
+{% block title %}Contato - Federick Crawler{% endblock %}
+
 {% block content %}
-<div class="container mt-5">
+<div class="container mt-5 shadow-container">
     <h1>Contato</h1>
-    <p>Entre em contato conosco através do email <a href="mailto:contato@federickcrawler.com">contato@federickcrawler.com</a>.</p>
+    <p>Entre em contato conosco através do email <a href="mailto:contato@federickcrawler.com">contato@federickcrawler.com</a> ou pelos nossos outros canais de comunicação listados abaixo.</p>
+
+    <div>
+        <h2>Informações de Contato</h2>
+        <ul class="contact-info">
+            <li><i class="fas fa-envelope"></i>Email: <a href="mailto:contato@federickcrawler.com">contato@federickcrawler.com</a></li>
+            <li><i class="fas fa-phone"></i>Telefone: (11) 1234-5678</li>
+            <li><i class="fas fa-map-marker-alt"></i>Endereço: Rua Exemplo, 123, São Paulo, SP, Brasil</li>
+        </ul>
+    </div>
+
+    <div>
+        <h2>Formulário de Contato</h2>
+        <form id="contact-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefone:</label>
+                <input type="text" class="form-control" id="phone" name="phone">
+            </div>
+            <div class="form-group">
+                <label for="message">Mensagem:</label>
+                <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+    </div>
+    <div id="success-message" class="alert alert-success" style="display: none; margin-top: 20px;">
+        Sua mensagem foi enviada com sucesso!
+    </div>
 </div>
 {% endblock %}

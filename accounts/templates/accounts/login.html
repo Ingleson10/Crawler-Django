@@ -1,40 +1,45 @@
 {% extends "global/base.html" %}
 
+{% block title %}Login - Federick Crawler{% endblock %}
+
 {% block content %}
-    <div class="container mt-4 login-margin">
-        <h2>Login</h2>
-        <form method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}">
-            <div class="form-group">
-                <label for="username">Email:</label>
-                <input type="text" name="username" id="username" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Senha:</label>
-                <input type="password" name="password" id="password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-            <div class="form-group mt-2">
-                <a href="{% url 'password_reset' %}" class="forgot-password">Esqueceu sua senha?</a>
-            </div>
-        </form>
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.tags == "error" %}
-                    <div class="alert alert-danger" role="alert" id="messages" style="margin-top:20px;">
-                        <p>{{ message }}</p>
-                    </div>
-                {% elif message.tags == "success" %}
-                    <div class="alert alert-success" role="alert" id="messages" style="margin-top:20px;">
-                        <p>{{ message }}</p>
-                    </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-        <hr class="my-4">
-        <a href="{% url 'signup' %}" class="btn btn-success">Cadastre-se</a>
-    </div>
+<div class="container mt-4 shadow-container">
+    <h2>Login</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == "error" %}
+                <div class="alert alert-danger" role="alert" id="messages" style="margin-top:20px;">
+                    <p>{{ message }}</p>
+                </div>
+            {% elif message.tags == "success" %}
+                <div class="alert alert-success" role="alert" id="messages" style="margin-top:20px;">
+                    <p>{{ message }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}">
+        <div class="form-group">
+            <label for="username">Email:</label>
+            <input type="text" name="username" id="username" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" name="password" id="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+        <div class="form-group mt-2">
+            <a href="{% url 'password_reset' %}" class="forgot-password">Esqueceu sua senha?</a>
+        </div>
+    </form>
+    
+    <hr class="my-4">
+    <a href="{% url 'signup' %}" class="btn btn-success">Cadastre-se</a>
+</div>
 {% endblock %}
 
 {% block scripts %}
