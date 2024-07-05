@@ -1,4 +1,5 @@
 {% extends "global/base.html" %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-5">
@@ -36,12 +37,64 @@
             {% endfor %}
         </div>
         <button type="button" class="btn btn-secondary" id="add-rule">Adicionar Regra de Scraping</button>
+        
         <div id="btns">
             <button type="submit" class="btn btn-success mt-3">Criar Projeto</button>
             <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3">Cancelar</a>
         </div>
     </form>
+
+    <h3>Análise da IA</h3>
+    <div id="analysis-result"></div>
+    <div id="sentiment-result"></div>
 </div>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#add-url').on('click', function(){
+            let urlText = prompt("Insira a URL para análise:");
+            if(urlText) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "analyze_text" %}',
+                    data: {
+                        'text': urlText,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if(response.analysis) {
+                            $('#analysis-result').append('<p>' + response.analysis + '</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Erro na análise: ' + xhr.responseJSON.error);
+                    }
+                });
+            }
+        });
 
+        $('#add-sentiment').on('click', function(){
+            let sentimentText = prompt("Insira o texto para análise de sentimentos:");
+            if(sentimentText) {
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "analyze_sentiment" %}',
+                    data: {
+                        'text': sentimentText,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function(response) {
+                        if(response.sentiment) {
+                            $('#sentiment-result').append('<p>' + response.sentiment + '</p>');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert('Erro na análise de sentimentos: ' + xhr.responseJSON.error);
+                    }
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}

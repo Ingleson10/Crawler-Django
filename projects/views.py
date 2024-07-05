@@ -1,7 +1,56 @@
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+import openai
+import os
 from .models import Project, Schedule, URL, ScrapingRule
 from .forms import ProjectForm, URLForm, ScrapingRuleForm, ScheduleForm
+
+chave_openai = os.getenv('CHAVE_OPENAI')
+
+@csrf_exempt
+def analyze_text(request):
+    if request.method == 'POST':
+        text = request.POST.get('text', '')
+        if not text:
+            return JsonResponse({'error': 'Nenhum texto fornecido'}, status=400)
+
+        try:
+            openai.api_key = chave_openai
+            response = openai.Completion.create(
+                model="text-davinci-003",
+                prompt=text,
+                max_tokens=100
+            )
+            result = response.choices[0].text.strip()
+            return JsonResponse({'analysis': result})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Método de requisição inválido'}, status=400)
+
+@csrf_exempt
+def analyze_sentiment(request):
+    if request.method == 'POST':
+        text = request.POST.get('text', '')
+        if not text:
+            return JsonResponse({'error': 'Nenhum texto fornecido'}, status=400)
+
+        try:
+            openai.api_key = chave_openai
+            response = openai.Completion.create(
+                model="text-davinci-003",
+                prompt=f"Analyze the sentiment of the following text: '{text}'",
+                max_tokens=50,
+                stop="\n"
+            )
+            result = response.choices[0].text.strip()
+            return JsonResponse({'sentiment': result})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Método de requisição inválido'}, status=400)
 
 @login_required
 def project_detail(request, project_id):
