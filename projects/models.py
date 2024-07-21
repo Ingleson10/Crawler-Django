@@ -5,6 +5,7 @@ class Project(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuário')
     name = models.CharField(max_length=100, null=False, verbose_name='Nome do Projeto')
     description = models.TextField(null=True, blank=True, verbose_name='Descrição')
+    ai_analysis = models.TextField(null=True, blank=True, verbose_name='Análise da IA')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Criado em')
 
     class Meta:
@@ -19,7 +20,7 @@ class URL(models.Model):
     STATUS_CHOICES = (
         ('valid', 'Válida'),
         ('invalid', 'Inválida'),
-        )
+    )
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='Projeto')
     url = models.TextField(null=False, verbose_name='URL')
@@ -31,14 +32,14 @@ class URL(models.Model):
         verbose_name_plural = 'URLs'
 
     def __str__(self):
-        return f'{self.project}'
+        return f'{self.project} - {self.url}'
 
 class ScrapingRule(models.Model):
 
     TYPE_CHOICES = (
         ('CSS', 'CSS'),
         ('XPath', 'XPath'),
-        )
+    )
     
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='Projeto')
     selector = models.TextField(null=False, verbose_name='Seletor')
@@ -55,7 +56,7 @@ class Schedule(models.Model):
         ('daily', 'Diária'),
         ('weekly', 'Semanalmente'),
         ('monthly', 'Mensalmente'),
-        )
+    )
     project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name='Projeto')
     frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES, verbose_name='Frequência')
     next_run = models.DateTimeField(verbose_name='Próxima Execução')
@@ -75,4 +76,4 @@ class ScrapingResult(models.Model):
         verbose_name_plural = 'Resultados de Scraping'
 
     def __str__(self):
-        return f'{self.pk} {self.url}'
+        return f'{self.pk} - {self.url}'
