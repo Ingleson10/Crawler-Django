@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
 
-CHAVE_OPENAI = os.getenv('sk-None-B7qOIL5ny5UYoZ8weEXFT3BlbkFJCaywPY0Msr1jesBloLi2')
+"""CHAVE_OPENAI = os.getenv('sk-None-B7qOIL5ny5UYoZ8weEXFT3BlbkFJCaywPY0Msr1jesBloLi2')"""
 
 # Acessar variáveis de ambiente
 DB_NAME = os.getenv("DB_NAME")
