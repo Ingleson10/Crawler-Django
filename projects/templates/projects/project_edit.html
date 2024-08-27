@@ -1,0 +1,39 @@
+{% extends "global/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Editar Projeto</h2>
+    <hr style="height:2px; border-width:0; color:gray; background-color:gray">
+    <form method="post" id="project-form">
+        {% csrf_token %}
+        {{ project_form.as_p }}
+        
+        <h3>Regras de Scraping</h3>
+        <div id="url-forms">
+            {{ url_formset.management_form }}
+            {% for form in url_formset %}
+                <div class="form-group url-group" data-id="{{ form.instance.id }}">
+                    {{ form.as_p }}
+                    <button type="button" class="btn btn-danger btn-sm remove-url-form" data-id="{{ form.instance.id }}">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="button" class="btn btn-secondary" id="add-url">Adicionar URL</button>
+
+        <h3 id="agenda-txt">Agendamentos</h3>
+        <div id="schedule-forms">
+            <div class="form-group">
+                {{ schedule_form.as_p }}
+            </div>
+        </div>
+
+        <hr style="height:2px; border-width:0; color:gray; background-color:gray">
+        <div id="btns">
+            <button type="submit" class="btn btn-success mt-3">Salvar Alterações</button>
+            <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

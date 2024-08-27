@@ -3,12 +3,15 @@ from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Project, Schedule, URL, ScrapingRule
-from .forms import ProjectForm, URLForm, ScrapingRuleForm, ScheduleForm
+from django.views.decorators.http import require_POST
+from .models import Project, Schedule, URLScrapingRule
+from .forms import ProjectForm, URLScrapingRuleForm, ScheduleForm, URLFormSet, ScheduleFormSet
 import csv
 import json
+from datetime import date
 from reportlab.pdfgen import canvas
-
+from django.forms import formset_factory, modelformset_factory
+from django.forms import inlineformset_factory
 # Obtenha a chave da OpenAI do settings.py
 from django.conf import settings
 
@@ -57,58 +60,118 @@ def analyze_sentiment(request):
 
 @login_required
 def project_create(request):
+
+    URLFormSet = modelformset_factory(
+        URLScrapingRule,
+        form=URLScrapingRuleForm,
+        extra=1,
+    )
     if request.method == 'POST':
         project_form = ProjectForm(request.POST)
-        url_forms = [URLForm(request.POST, prefix=str(i)) for i in range(len(request.POST.getlist('url')))]
-        schedule_forms = [ScheduleForm(request.POST, prefix=str(i)) for i in range(len(request.POST.getlist('schedule')))]
-        scraping_rule_forms = [ScrapingRuleForm(request.POST, prefix=str(i)) for i in range(len(request.POST.getlist('rule')))]
-        
-        forms_valid = project_form.is_valid() and all([form.is_valid() for form in url_forms + schedule_forms + scraping_rule_forms])
-        
-        if forms_valid:
+        url_formset = URLFormSet(request.POST, queryset=URLScrapingRule.objects.none(), prefix='url')
+        schedule_form = ScheduleForm(request.POST)
+
+        if project_form.is_valid() and url_formset.is_valid() and schedule_form.is_valid():
             project = project_form.save(commit=False)
             project.user = request.user
             project.save()
             
-            for form in url_forms:
+            for form in url_formset:
                 url_instance = form.save(commit=False)
                 url_instance.project = project
                 url_instance.save()
-                
-                # Análise da IA
-                openai.api_key = settings.CHAVE_OPENAI
-                response = openai.Completion.create(
-                    model="text-davinci-003",
-                    prompt=f"Analyze the following URL: {url_instance.url}",
-                    max_tokens=100
-                )
-                project.ai_analysis = response.choices[0].text.strip()
-                project.save()
-            
-            for form in schedule_forms:
-                schedule_instance = form.save(commit=False)
-                schedule_instance.project = project
-                schedule_instance.save()
-                
-            for form in scraping_rule_forms:
-                rule_instance = form.save(commit=False)
-                rule_instance.project = project
-                rule_instance.save()
-            
-            return JsonResponse({'success': True})
+
+
+            schedule_instance = schedule_form.save(commit=False)
+            schedule_instance.project = project
+            schedule_instance.created_at = date.today()
+            schedule_instance.save()
+
+            return redirect('project_list')
+
     else:
         project_form = ProjectForm()
-        url_forms = [URLForm(prefix=str(i)) for i in range(1)]  # Inicializa com um formulário vazio
-        schedule_forms = [ScheduleForm(prefix=str(i)) for i in range(1)]
-        scraping_rule_forms = [ScrapingRuleForm(prefix=str(i)) for i in range(1)]
+        url_formset = URLFormSet(queryset=URLScrapingRule.objects.none(), prefix='url')
+        schedule_form = ScheduleForm()
+
+    context = {
+        'project_form': project_form,
+        'url_formset': url_formset,
+        'schedule_form': schedule_form,
+    }
+
+    return render(request, 'projects/project_create.html', context)
+
+
+
+@login_required
+def project_edit(request, project_id):
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+
+    schedule, created = Schedule.objects.get_or_create(project=project)
+    
+    if request.method == 'POST':
+        project_form = ProjectForm(request.POST, instance=project)
+        url_formset = URLFormSet(request.POST, queryset=URLScrapingRule.objects.filter(project=project), prefix='url')
+        schedule_form = ScheduleForm(request.POST, instance=project)
+
+        
+        if project_form.is_valid() and url_formset.is_valid() and schedule_form.is_valid():
+            project = project_form.save(commit=False)
+            project.user = request.user
+            project.save()
+
+            url_formset.save(commit=False)
+            for form in url_formset:
+                url_instance = form.save(commit=False)
+                if form.cleaned_data.get('DELETE'):
+                    url_instance.delete()
+                else:
+                    url_instance.project = project
+                    url_instance.save()
+
+            schedule_instance  = schedule_form.save(commit=False)
+            schedule_instance.project = project
+            schedule_instance.save()
+
+
+            return redirect('project_list')
+    else:
+        project_form = ProjectForm(instance=project)
+        url_formset = URLFormSet(queryset=URLScrapingRule.objects.filter(project=project), prefix='url')
+        schedule_form = ScheduleForm(instance=schedule)
+        
+    
+
     
     context = {
         'project_form': project_form,
-        'url_forms': url_forms,
-        'schedule_forms': schedule_forms,
-        'scraping_rule_forms': scraping_rule_forms,
+        'url_formset': url_formset,
+        'schedule_form': schedule_form,
     }
-    return render(request, 'projects/project_create.html', context)
+
+    return render(request, 'projects/project_edit.html', context)
+
+@login_required
+@require_POST
+def delete_url(request, url_id):
+    url_rule = get_object_or_404(URLScrapingRule, id=url_id, project__user=request.user)
+    url_rule.delete()
+    return JsonResponse({'status': 'success'})
+
+
+@login_required
+def project_detail(request, project_id):
+    project = get_object_or_404(Project, id=project_id, user=request.user)
+    urls = URLScrapingRule.objects.filter(project=project)
+    schedules = Schedule.objects.filter(project=project)
+
+    context = {
+        'project': project,
+        'urls': urls,
+        'schedules': schedules,
+    }
+    return render(request, 'projects/project_detail.html', context)
 
 @login_required
 def project_list(request):
@@ -117,69 +180,19 @@ def project_list(request):
     selected_project = None
     urls = []
     schedules = []
-    scraping_rules = []
 
     if selected_project_id:
         selected_project = get_object_or_404(Project, id=selected_project_id, user=request.user)
-        urls = URL.objects.filter(project=selected_project)
+        urls = URLScrapingRule.objects.filter(project=selected_project)
         schedules = Schedule.objects.filter(project=selected_project)
-        scraping_rules = ScrapingRule.objects.filter(project=selected_project)
-    
+
     context = {
         'projects': projects,
         'selected_project': selected_project,
         'urls': urls,
         'schedules': schedules,
-        'scraping_rules': scraping_rules
     }
     return render(request, 'projects/project_list.html', context)
-
-@login_required
-def project_detail(request, project_id):
-    project = get_object_or_404(Project, id=project_id, user=request.user)
-    urls = URL.objects.filter(project=project)
-    schedules = Schedule.objects.filter(project=project)
-    scraping_rules = ScrapingRule.objects.filter(project=project)
-    
-    if request.method == 'POST':
-        project_form = ProjectForm(request.POST, instance=project)
-        url_forms = [URLForm(request.POST, instance=url) for url in urls]
-        schedule_forms = [ScheduleForm(request.POST, instance=schedule) for schedule in schedules]
-        scraping_rule_forms = [ScrapingRuleForm(request.POST, instance=rule) for rule in scraping_rules]
-        
-        forms_valid = all([form.is_valid() for form in [project_form] + url_forms + schedule_forms + scraping_rule_forms])
-        
-        if forms_valid:
-            project_form.save()
-            for form in url_forms:
-                form.save()
-            for form in schedule_forms:
-                form.save()
-            for form in scraping_rule_forms:
-                form.save()
-            return redirect('project_detail', project_id=project.id)
-    else:
-        project_form = ProjectForm(instance=project)
-        url_forms = [URLForm(instance=url) for url in urls]
-        schedule_forms = [ScheduleForm(instance=schedule) for schedule in schedules]
-        scraping_rule_forms = [ScrapingRuleForm(instance=rule) for rule in scraping_rules]
-    
-    context = {
-        'project': project,
-        'urls': urls,
-        'schedules': schedules,
-        'scraping_rules': scraping_rules,
-        'project_form': project_form,
-        'url_forms': url_forms,
-        'schedule_forms': schedule_forms,
-        'scraping_rule_forms': scraping_rule_forms,
-        'edit_mode': request.GET.get('edit', 'false') == 'true',
-    }
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return render(request, 'projects/project_detail_partial.html', context)
-    else:
-        return render(request, 'projects/project_detail.html', context)
 
 @login_required
 def generate_pdf(request):
@@ -192,7 +205,7 @@ def generate_pdf(request):
     p.drawString(100, 780, f'Descrição: {project.description}')
     p.drawString(100, 760, f'Análise da IA: {project.ai_analysis}')
     
-    urls = URL.objects.filter(project=project)
+    urls = URLScrapingRule.objects.filter(project=project)
     p.drawString(100, 740, 'URLs:')
     y = 720
     for url in urls:
@@ -217,7 +230,7 @@ def generate_csv(request):
     writer.writerow(['Análise da IA', project.ai_analysis])
     writer.writerow([])
     writer.writerow(['URLs'])
-    urls = URL.objects.filter(project=project)
+    urls = URLScrapingRule.objects.filter(project=project)
     for url in urls:
         writer.writerow([url.url, url.get_status_display()])
 
@@ -236,7 +249,7 @@ def generate_json(request):
             'name': project.name,
             'description': project.description,
             'ai_analysis': project.ai_analysis,
-            'urls': [{'url': url.url, 'status': url.get_status_display()} for url in URL.objects.filter(project=project)],
+            'urls': [{'url': url.url, 'status': url.get_status_display()} for url in URLScrapingRule.objects.filter(project=project)],
             # Adicione outras seções conforme necessário
         }
     }

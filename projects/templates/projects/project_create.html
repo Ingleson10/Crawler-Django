@@ -1,155 +1,39 @@
 {% extends "global/base.html" %}
-{% load static %}
 
 {% block content %}
 <div class="container mt-5">
-    <h2>Criar Novo Projeto</h2>
+    <h2>Criar Projeto</h2>
+    <hr style="height:2px; border-width:0; color:gray; background-color:gray">
     <form method="post" id="project-form">
         {% csrf_token %}
         {{ project_form.as_p }}
         
-        <h3>URLs</h3>
+        <h3>Regras de Scraping</h3>
         <div id="url-forms">
-            {% for form in url_forms %}
-                <div class="form-group">
+            {{ url_formset.management_form }}
+            {% for form in url_formset %}
+                <div class="form-group url-group" data-id="new">
                     {{ form.as_p }}
-                    <button type="button" class="btn btn-danger btn-sm remove-url">Remover</button>
+                    <button type="button" class="btn btn-danger btn-sm remove-url-form" data-id="new">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             {% endfor %}
         </div>
         <button type="button" class="btn btn-secondary" id="add-url">Adicionar URL</button>
-        <button type="button" class="btn btn-info" id="track-url">Rastrear URL</button>
-        
-        <h3>Agendamentos</h3>
+
+        <h3 id="agenda-txt">Agendamentos</h3>
         <div id="schedule-forms">
-            {% for form in schedule_forms %}
-                <div class="form-group">
-                    {{ form.as_p }}
-                    <button type="button" class="btn btn-danger btn-sm remove-schedule">Remover</button>
-                </div>
-            {% endfor %}
+            <div class="form-group schedule-group">
+                {{ schedule_form.as_p }}
+            </div>
         </div>
-        <button type="button" class="btn btn-secondary" id="add-schedule">Adicionar Agendamento</button>
-        
-        <h3>Regras de Scraping</h3>
-        <div id="rule-forms">
-            {% for form in scraping_rule_forms %}
-                <div class="form-group">
-                    {{ form.as_p }}
-                    <button type="button" class="btn btn-danger btn-sm remove-rule">Remover</button>
-                </div>
-            {% endfor %}
-        </div>
-        <button type="button" class="btn btn-secondary" id="add-rule">Adicionar Regra de Scraping</button>
-        
+
+        <hr style="height:2px; border-width:0; color:gray; background-color:gray">
         <div id="btns">
             <button type="submit" class="btn btn-success mt-3">Criar Projeto</button>
             <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3">Cancelar</a>
         </div>
     </form>
-
-    <h3>Análise da IA</h3>
-    <div id="analysis-result"></div>
-    <div id="sentiment-result"></div>
-
-    <h3>Exportar Dados</h3>
-    <a href="{% url 'generate_pdf' %}" class="btn btn-primary">Gerar PDF</a>
-    <a href="{% url 'generate_csv' %}" class="btn btn-primary">Gerar CSV</a>
-    <a href="{% url 'generate_json' %}" class="btn btn-primary">Gerar JSON</a>
 </div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function(){
-        // Adicionar URL
-        $('#add-url').on('click', function(){
-            let urlFormHtml = `
-                <div class="form-group">
-                    <label for="url">URL:</label>
-                    <input type="text" name="url" class="form-control" required>
-                    <button type="button" class="btn btn-danger btn-sm remove-url">Remover</button>
-                </div>`;
-            $('#url-forms').append(urlFormHtml);
-        });
-
-        // Remover URL
-        $(document).on('click', '.remove-url', function(){
-            $(this).parent('.form-group').remove();
-        });
-
-        // Adicionar Agendamento
-        $('#add-schedule').on('click', function(){
-            let scheduleFormHtml = `
-                <div class="form-group">
-                    <label for="schedule">Agendamento:</label>
-                    <input type="text" name="schedule" class="form-control" required>
-                    <button type="button" class="btn btn-danger btn-sm remove-schedule">Remover</button>
-                </div>`;
-            $('#schedule-forms').append(scheduleFormHtml);
-        });
-
-        // Remover Agendamento
-        $(document).on('click', '.remove-schedule', function(){
-            $(this).parent('.form-group').remove();
-        });
-
-        // Adicionar Regra de Scraping
-        $('#add-rule').on('click', function(){
-            let ruleFormHtml = `
-                <div class="form-group">
-                    <label for="rule">Regra de Scraping:</label>
-                    <input type="text" name="rule" class="form-control" required>
-                    <button type="button" class="btn btn-danger btn-sm remove-rule">Remover</button>
-                </div>`;
-            $('#rule-forms').append(ruleFormHtml);
-        });
-
-        // Remover Regra de Scraping
-        $(document).on('click', '.remove-rule', function(){
-            $(this).parent('.form-group').remove();
-        });
-
-        // Rastrear URL
-        $('#track-url').on('click', function(){
-            let url = prompt("Insira a URL para análise:");
-            if(url) {
-                $.ajax({
-                    type: 'POST',
-                    url: '{% url "track_url" %}',
-                    data: {
-                        'url': url,
-                        'csrfmiddlewaretoken': '{{ csrf_token }}'
-                    },
-                    success: function(response) {
-                        if(response.analysis) {
-                            $('#analysis-result').append('<p>' + response.analysis + '</p>');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        alert('Erro na análise: ' + xhr.responseJSON.error);
-                    }
-                });
-            }
-        });
-
-        // Submeter formulário
-        $('#project-form').on('submit', function(e){
-            e.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: '{% url "project_create" %}',
-                data: $(this).serialize(),
-                success: function(response) {
-                    if(response.success) {
-                        alert('Projeto salvo com sucesso!');
-                        location.reload();
-                    }
-                },
-                error: function(xhr, status, error) {
-                    alert('Erro ao salvar o projeto: ' + xhr.responseJSON.error);
-                }
-            });
-        });
-    });
-</script>
 {% endblock %}

@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
             editButton.addEventListener('click', function() {
                 const projectId = document.getElementById('project-form').getAttribute('data-project-id');
                 if (projectId) {
-                    window.location.href = `/projects/project/${projectId}/?edit=true`;
+                    window.location.href = `/projects/project/${projectId}/edit/`;
                 } else {
                     alert("Project ID is missing.");
                 }
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Adiciona o listener ao botão de edição ao carregar o DOM
-    addEditButtonListener();
+    // addEditButtonListener();
 
     // Adiciona o listener aos links dos projetos
     document.querySelectorAll('.project-link').forEach(function(link) {
@@ -52,65 +52,152 @@ document.addEventListener('DOMContentLoaded', function() {
                 history.pushState(null, '', `/projects/project/${projectId}/`);
                 // Reatribui o listener ao botão de edição após atualizar o conteúdo
                 addEditButtonListener();
+                fixFooterPosition();
+    
+                // Remove o botão "Voltar aos Projetos" se carregado via AJAX
+                var backButton = document.querySelector('.back-to-list-btn');
+                if (backButton) {
+                    backButton.style.display = 'none';
+                }
             })
             .catch(error => console.error('Error:', error));
+            fixFooterPosition();
         });
     });
+    
+    // const addUrlButton = document.getElementById('add-url');
+    // const urlFormsDiv = document.getElementById('url-forms');
 
-    // Adiciona formulários de URL dinamicamente
+    // Função para obter o token CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Verifica se o cookie começa com o nome que queremos
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    // if (addUrlButton) {
+    //     addUrlButton.addEventListener('click', function() {
+    //         const formIndex = new Date().getTime();
+    //         const newFormHtml = `
+    //             <div class="form-group url-group" id="url-form-${formIndex}">
+    //                 <p>
+    //                     <label for="url-${formIndex}-url">URL:</label>
+    //                     <input type="text" name="url" class="form-control" required id="url-${formIndex}-url">
+    //                 </p>
+    //                 <p>
+    //                     <label for="url-${formIndex}-status">Status:</label>
+    //                     <select name="url-${formIndex}-status" class="form-control" required id="url-${formIndex}-status">
+    //                         <option value="" selected>---------</option>
+    //                         <option value="valid">Válida</option>
+    //                         <option value="invalid">Inválida</option>
+    //                     </select>
+    //                 </p>
+    //                 <p>
+    //                     <label for="url-${formIndex}-selector">Seletor:</label>
+    //                     <input type="text" name="url-${formIndex}-selector" class="form-control" required id="url-${formIndex}-selector">
+    //                 </p>
+    //                 <p>
+    //                     <label for="url-${formIndex}-type">Tipo:</label>
+    //                     <select name="url-${formIndex}-type" class="form-control" required id="url-${formIndex}-type">
+    //                         <option value="" selected>---------</option>
+    //                         <option value="CSS">CSS</option>
+    //                         <option value="XPath">XPath</option>
+    //                     </select>
+    //                 </p>
+    //                 <button type="button" class="btn btn-danger btn-sm remove-url-form" data-id="new">
+    //                     <i class="fas fa-trash-alt"></i>
+    //                 </button>
+    //             </div>
+    //         `;
+    //         urlFormsDiv.insertAdjacentHTML('beforeend', newFormHtml);
+
+    //         document.querySelector(`#url-form-${formIndex} .remove-url-form`).addEventListener('click', function() {
+    //             if (confirm('Tem certeza que deseja deletar esta URL?')) {
+    //                 this.closest('.url-group').remove();
+    //             }
+    //         });
+    //     });
+    // }
+
     const addUrlButton = document.getElementById('add-url');
+    const addScheduleButton = document.getElementById('add-schedule');
+    const urlFormsDiv = document.getElementById('url-forms');
+    const scheduleFormsDiv = document.getElementById('schedule-forms');
+
+    function updateFormIndex(formsDiv, prefix) {
+        const forms = formsDiv.querySelectorAll('.form-group');
+        forms.forEach((form, index) => {
+            form.querySelectorAll('input, select, textarea').forEach(input => {
+                input.name = input.name.replace(/-\d+-/, `-${index}-`);
+                input.id = input.id.replace(/-\d+-/, `-${index}-`);
+            });
+        });
+        formsDiv.querySelector(`#id_${prefix}-TOTAL_FORMS`).value = forms.length;
+    }
+
     if (addUrlButton) {
         addUrlButton.addEventListener('click', function() {
-            const urlFormsDiv = document.getElementById('url-forms');
-            const newFormHtml = `
-                <div class="form-group">
-                    <input type="text" name="url" class="form-control" placeholder="URL">
-                    <select name="status" class="form-control">
-                        <option value="valid">Válida</option>
-                        <option value="invalid">Inválida</option>
-                    </select>
-                </div>
-            `;
-            urlFormsDiv.insertAdjacentHTML('beforeend', newFormHtml);
+            const newForm = urlFormsDiv.querySelector('.url-group').cloneNode(true);
+            newForm.querySelectorAll('input, select').forEach(input => input.value = '');
+            newForm.setAttribute('data-id', 'new');
+            urlFormsDiv.appendChild(newForm);
+            updateFormIndex(urlFormsDiv, 'url');
+            const removeButton = newForm.querySelector('.remove-url-form');
+            removeButton.setAttribute('data-id', 'new');
+            newForm.querySelector('.remove-url-form').addEventListener('click', function() {
+                newForm.remove();
+                updateFormIndex(urlFormsDiv, 'url');
+            });
         });
     }
 
-    // Adiciona formulários de agendamento dinamicamente
-    const addScheduleButton = document.getElementById('add-schedule');
-    if (addScheduleButton) {
-        addScheduleButton.addEventListener('click', function() {
-            const scheduleFormsDiv = document.getElementById('schedule-forms');
-            const newFormHtml = `
-                <div class="form-group">
-                    <select name="frequency" class="form-control">
-                        <option value="daily">Diária</option>
-                        <option value="weekly">Semanalmente</option>
-                        <option value="monthly">Mensalmente</option>
-                    </select>
-                    <input type="datetime-local" name="next_run" class="form-control">
-                </div>
-            `;
-            scheduleFormsDiv.insertAdjacentHTML('beforeend', newFormHtml);
+    document.querySelectorAll('.remove-url-form').forEach(function(button) {
+        button.addEventListener('click', function() {
+            const urlGroups = urlFormsDiv.querySelectorAll('.url-group');
+            if (urlGroups.length > 1){
+            
+                const urlId = this.getAttribute('data-id');
+                if (urlId === 'new') {
+                    this.closest('.url-group').remove();
+                    updateFormIndex(urlFormsDiv, 'url');
+                } else {
+                    if (confirm('Tem certeza que deseja deletar esta URL?')) {
+                        fetch(`/projects/project/delete-url/${urlId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrftoken,
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                this.closest('.url-group').remove();
+                                updateFormIndex(urlFormsDiv, 'url');
+                            } else {
+                                alert('Erro ao deletar a URL.');
+                            }
+                        });
+                    }
+                }
+            }
+            else{
+                alert('O projeto deve conter pelo menos uma URL.');
+            }
         });
-    }
-
-    // Adiciona formulários de regras de scraping dinamicamente
-    const addRuleButton = document.getElementById('add-rule');
-    if (addRuleButton) {
-        addRuleButton.addEventListener('click', function() {
-            const ruleFormsDiv = document.getElementById('rule-forms');
-            const newFormHtml = `
-                <div class="form-group">
-                    <input type="text" name="selector" class="form-control" placeholder="Seletor">
-                    <select name="type" class="form-control">
-                        <option value="CSS">CSS</option>
-                        <option value="XPath">XPath</option>
-                    </select>
-                </div>
-            `;
-            ruleFormsDiv.insertAdjacentHTML('beforeend', newFormHtml);
-        });
-    }
+        
+    });
 
     // Função para validar e exibir mensagem de sucesso no formulário de contato
     const contactForm = document.getElementById('contact-form');
@@ -123,4 +210,6 @@ document.addEventListener('DOMContentLoaded', function() {
             contactForm.reset();
         });
     }
+
+
 });

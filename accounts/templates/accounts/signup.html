@@ -16,22 +16,22 @@
         {% csrf_token %}
         <div class="form-group">
             <label for="{{ form.first_name.id_for_label }}">Nome:</label>
-            <input type="text" name="{{ form.first_name.name }}" id="{{ form.first_name.id_for_label }}" class="form-control" required>
+            {{ form.first_name }}
             {% for error in form.first_name.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
         <div class="form-group">
             <label for="{{ form.last_name.id_for_label }}">Sobrenome:</label>
-            <input type="text" name="{{ form.last_name.name }}" id="{{ form.last_name.id_for_label }}" class="form-control" required>
+            {{ form.last_name }}
             {% for error in form.last_name.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
         <div class="form-group">
-            <label for="{{ form.username.id_for_label }}">Email:</label>
-            <input type="email" name="{{ form.username.name }}" id="{{ form.username.id_for_label }}" class="form-control" required>
-            {% for error in form.username.errors %}
+            <label for="{{ form.email.id_for_label }}">Email:</label>
+            {{ form.email }}
+            {% for error in form.email.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>
@@ -46,6 +46,12 @@
             <label for="{{ form.password2.id_for_label }}">Confirmação de Senha:</label>
             <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.id_for_label }}" class="form-control" required>
             {% for error in form.password2.errors %}
+                <div class="error-message">{{ error }}</div>
+            {% endfor %}
+        </div>
+        <div class="form-group">
+            {{ form.accept_terms }}
+            {% for error in form.accept_terms.errors %}
                 <div class="error-message">{{ error }}</div>
             {% endfor %}
         </div>

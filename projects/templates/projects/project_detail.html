@@ -1,55 +1,63 @@
-{% extends "global/base.html" %}
-
-{% block content %}
 <div class="container mt-5">
     <h2>Detalhes do Projeto: {{ project.name }}</h2>
-    <form method="post" id="project-form" data-project-id="{{ project.id }}">
-        {% csrf_token %}
-        {% if edit_mode %}
-            {{ project_form.as_p }}
-        {% else %}
-            <p><strong>Nome:</strong> {{ project.name }}</p>
-            <p><strong>Descrição:</strong> {{ project.description }}</p>
-        {% endif %}
-        
-        <h3>URLs</h3>
-        {% for form in url_forms %}
-            <div>
-                {% if edit_mode %}
-                    {{ form.as_p }}
-                {% else %}
-                    <p>{{ form.instance.url }} - {{ form.instance.get_status_display }}</p>
-                {% endif %}
+    <p><strong>Descrição:</strong> {{ project.description }}</p>
+    <p><strong>Análise da IA:</strong> {{ project.ai_analysis }}</p>
+    
+    <h3>Regras de Scraping</h3>
+    {% for url in urls %}
+        <div>
+            <p>{{ url.url }} - {{ url.get_status_display }}</p>
+            <p>{{ url.selector }} ({{ url.get_type_display }})</p>
+        </div>
+    {% endfor %}
+    
+    <h3>Agendamentos</h3>
+    {% for schedule in schedules %}
+        <div>
+            <p>{{ schedule.get_frequency_display }} - Próxima execução: {{ schedule.next_run }}</p>
+        </div>
+    {% endfor %}
+    
+    <a href="{% url 'project_edit' project.id %}" class="btn btn-primary mt-3">Editar</a>
+    <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3 back-to-list-btn">Voltar aos Projetos</a>
+
+    <!-- Retângulo em volta da seção -->
+    <div class="p-4 mt-4" style="border: 1px solid #ccc; border-radius: 5px;">
+        <!-- Filtro de Data -->
+        <div class="mb-3">
+            <h5>Filtrar por Data</h5>
+            <div class="form-inline">
+                <label for="start_date">De:</label>
+                <input type="date" id="start_date" name="start_date" class="form-control mx-2">
+                <label for="end_date">Até:</label>
+                <input type="date" id="end_date" name="end_date" class="form-control mx-2">
             </div>
-        {% endfor %}
-        
-        <h3>Agendamentos</h3>
-        {% for form in schedule_forms %}
-            <div>
-                {% if edit_mode %}
-                    {{ form.as_p }}
-                {% else %}
-                    <p>{{ form.instance.get_frequency_display }} - Próxima execução: {{ form.instance.next_run }}</p>
-                {% endif %}
+        </div>
+
+        <!-- Botões de Exportação -->
+        <div class="mb-3">
+            <h5>Exportar Relatório Como</h5>
+            <div class="btn-group" role="group" aria-label="Export format">
+                <input type="radio" class="btn-check" name="export_format" id="export_json" autocomplete="off">
+                <label class="btn btn-outline-primary" for="export_json">
+                    <i class="fas fa-file-code"></i> JSON
+                </label>
+            
+                <input type="radio" class="btn-check" name="export_format" id="export_csv" autocomplete="off">
+                <label class="btn btn-outline-primary" for="export_csv">
+                    <i class="fas fa-file-csv"></i> CSV
+                </label>
+            
+                <input type="radio" class="btn-check" name="export_format" id="export_pdf" autocomplete="off">
+                <label class="btn btn-outline-primary" for="export_pdf">
+                    <i class="fas fa-file-pdf"></i> PDF
+                </label>
             </div>
-        {% endfor %}
-        
-        <h3>Regras de Scraping</h3>
-        {% for form in scraping_rule_forms %}
-            <div>
-                {% if edit_mode %}
-                    {{ form.as_p }}
-                {% else %}
-                    <p>{{ form.instance.selector }} ({{ form.instance.get_type_display }})</p>
-                {% endif %}
-            </div>
-        {% endfor %}
-        
-        {% if edit_mode %}
-            <button type="submit" class="btn btn-success">Salvar Alterações</button>
-        {% endif %}
-        
-    </form>
-    <a href="{% url 'project_list' %}" class="btn btn-secondary mt-3">Voltar aos Projetos</a>
+        </div>
+
+        <!-- Botão Gerar Relatório -->
+        <div>
+            <button type="button" class="btn btn-success">Gerar Relatório</button>
+        </div>
+    </div>
 </div>
-{% endblock %}

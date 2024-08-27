@@ -6,7 +6,7 @@ class Plan(models.Model):
         ('daily', 'Diária'),
         ('weekly', 'Semanalmente'),
         ('monthly', 'Mensalmente'),
-        )
+    )
     name = models.CharField(max_length=50, verbose_name='Plano')
     description = models.TextField(null=True, blank=True, verbose_name='Descrição')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Valor')

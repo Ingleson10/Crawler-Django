@@ -112,6 +112,58 @@ body {
     box-shadow: 0 4px 8px rgba(0, 91, 179, 0.2);
 }
 
+.url-group {
+    background-color: rgb(255, 255, 255);
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.delete-checkbox {
+    display: none;
+}
+
+.form-inline label {
+    margin-right: 10px;
+}
+
+/* Ocultar completamente a bolinha, mantendo o botão funcional */
+input[type="radio"].btn-check {
+    position: absolute;
+    clip: rect(0, 0, 0, 0);
+    pointer-events: none;
+}
+
+/* Estilizar os botões (labels) */
+.btn-outline-primary {
+    background-color: white;
+    color: #007bff;
+    border: 1px solid #007bff;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Inverter as cores quando o radio button correspondente está checked */
+input[type="radio"].btn-check:checked + .btn-outline-primary {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+
+
+#add-rule {
+    margin-top: 10px;
+    
+}
+
+#agenda-txt {
+    margin-top: 10px;
+}
+
 .form-check-label {
     margin-left: 10px;
 }

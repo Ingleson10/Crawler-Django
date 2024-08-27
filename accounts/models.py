@@ -15,7 +15,6 @@ class CustomUserManager(BaseUserManager):
     def create_superuser(self, email, first_name, last_name, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
-
         return self.create_user(email, first_name, last_name, password, **extra_fields)
 
 
@@ -23,7 +22,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True, max_length=100, blank=False, verbose_name='E-mail')
     first_name = models.CharField(max_length=50, blank=False, verbose_name='Nome')
     last_name = models.CharField(max_length=100, blank=False, verbose_name='Sobrenome')
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Data de Cadastro' )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Data de Cadastro')
     is_active = models.BooleanField(default=True, verbose_name='Usuário Ativo')
     is_staff = models.BooleanField(default=False, verbose_name='Admin')
 
@@ -46,7 +45,7 @@ class Subscription(models.Model):
         ('active', 'Ativa'),
         ('cancelled', 'Cancelada'),
         ('expired', 'Expirada'),
-        )
+    )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuário')
     plan = models.ForeignKey(Plan, on_delete=models.CASCADE, verbose_name='Plano')
@@ -65,12 +64,12 @@ class Payment(models.Model):
         ('completed', 'Concluído'),
         ('failed', 'Negado'),
         ('pending', 'Pendente'),
-        )
+    )
     
     STATUS_CHOICES = (
         ('credit_card', 'Cartão de Crédito'),
         ('paypal', 'PayPal'),
-        )
+    )
     
     subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, verbose_name='Inscrição')
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Valor')
@@ -100,7 +99,7 @@ class SupportTicket(models.Model):
         ('open', 'Aberto'),
         ('in_progress', 'Em andamento'),
         ('closed', 'Fechado'),
-        )
+    )
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Usuário')
     subject = models.CharField(max_length=100, null=False, verbose_name='Assunto')
